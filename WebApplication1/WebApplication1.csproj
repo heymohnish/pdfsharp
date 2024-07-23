@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="PDFsharp" Version="6.1.1" />
-    <PackageReference Include="Portable.BouncyCastle" Version="1.9.0" />
+    <PackageReference Include="BouncyCastle.Cryptography" Version="2.4.0" />
+    <PackageReference Include="PDFsharp-extended" Version="1.1.1" />
   </ItemGroup>
 
 </Project>
