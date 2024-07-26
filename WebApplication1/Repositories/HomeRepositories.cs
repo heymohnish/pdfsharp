@@ -1,41 +1,42 @@
-﻿
-using PdfSharp.Drawing.Layout;
+﻿using PdfSharp.Drawing.Layout;
 using PdfSharp.Drawing;
 using PdfSharp.Fonts;
 using PdfSharp.Pdf.Annotations;
 using PdfSharp.Pdf.IO;
 using PdfSharp.Pdf.Signatures;
-using PdfSharp.Pdf;
-using PdfSharp.Snippets.Font;
 using PdfSharp;
 using System.Security.Cryptography.X509Certificates;
+using PdfSharp.Pdf;
 
 namespace WebApplication1.Repositories
 {
-    public class HomeRepositories : IAnnotationAppearanceHandler
+    public class HomeRepositories 
     {
-        private XImage Image = XImage.FromFile(@"C:\Users\mohnish.varatharajan\source\repos\pdfsharp\WebApplication1\wwwroot\image\sachinsign.jpg");
-
-        public void DrawAppearance(XGraphics gfx, XRect rect)
+        /*public void DrawAppearance(XGraphics gfx, XRect rect)
         {
-            XColor empty = XColor.Empty;
-            string text = "Signed by Napoleon \nLocation: Paris \nDate: " + DateTime.Now.ToString();
-            XFont font = new XFont("Verdana", 7.0, XFontStyleEx.Regular);
-            XTextFormatter xTextFormatter = new XTextFormatter(gfx);
-            int num = this.Image.PixelWidth / this.Image.PixelHeight;
-            XPoint xPoint = new XPoint(0.0, 0.0);
-            bool flag = this.Image != null;
-            if (flag)
+            for (int i = 1; i <= 2; i++)
             {
-                gfx.DrawImage(this.Image, xPoint.X, xPoint.Y, rect.Width / 4.0, rect.Width / 4.0 / (double)num);
-                xPoint = new XPoint(rect.Width / 4.0, 0.0);
+                XImage Image = XImage.FromFile(@"C:\Users\mohnish.varatharajan\source\repos\pdfsharp\WebApplication1\wwwroot\image\sachinsign.jpg");
+                XColor empty = XColor.Empty;
+                string text = "Signed by Napoleon \nLocation: Paris \nDate: " + DateTime.Now.ToString();
+                XFont font = new XFont("Verdana", 7.0, XFontStyleEx.Regular);
+                XTextFormatter xTextFormatter = new XTextFormatter(gfx);
+                int num = Image.PixelWidth / Image.PixelHeight;
+                XPoint xPoint = new XPoint(0.0, 0.0);
+                bool flag = Image != null;
+                if (flag)
+                {
+                    gfx.DrawImage(Image, xPoint.X + i, xPoint.Y + i, ((5 * i) + rect.Width) / 4.0, ((5 * i) + rect.Width) / 4.0 / (double)num);
+                    xPoint = new XPoint(rect.Width / 4.0, 0.0);
+                }
+                xTextFormatter.DrawString(text, font, new XSolidBrush(XColor.FromKnownColor(XKnownColor.Black)), new XRect((5 * i) + xPoint.X, (5 * i) + xPoint.Y, rect.Width - xPoint.X, rect.Height), XStringFormats.TopLeft);
             }
-            xTextFormatter.DrawString(text, font, new XSolidBrush(XColor.FromKnownColor(XKnownColor.Black)), new XRect(xPoint.X, xPoint.Y, rect.Width - xPoint.X, rect.Height), XStringFormats.TopLeft);
+
         }
         public void CallPDF()
         {
-            if (Capabilities.Build.IsCoreBuild)
-                GlobalFontSettings.FontResolver = new FailsafeFontResolver();
+            *//*if (Capabilities.Build.IsCoreBuild)
+                GlobalFontSettings.FontResolver = new FailsafeFontResolver();*//*
 
             CreateAndSign();
             SignExisting();
@@ -55,7 +56,7 @@ namespace WebApplication1.Repositories
                 Location = "Paris",
                 Reason = "Test signatures",
                 Rectangle = new XRect(36.0, 700.0, 200.0, 50.0),
-                //AppearanceHandler = new Program.SignAppearenceHandler()
+                // AppearanceHandler = new HomeRepositories()
             };
             PdfSignatureHandler pdfSignatureHandler = new PdfSignatureHandler(new BouncySigner(GetCertificate()), options);
             pdfSignatureHandler.AttachToDocument(pdfDocument);
@@ -74,7 +75,7 @@ namespace WebApplication1.Repositories
                 Rectangle = new XRect(36.0, 735.0, 200.0, 50.0),
                 AppearanceHandler = new HomeRepositories()
             };
-            PdfSignatureHandler pdfSignatureHandler = new PdfSignatureHandler(new BouncySigner(GetCertificate()), options);
+            PdfSignatureHandler pdfSignatureHandler = new PdfSignatureHandler(null, options);
             pdfSignatureHandler.AttachToDocument(pdfDocument);
             pdfDocument.Save(text);
             //Process.Start(text);
@@ -93,8 +94,38 @@ namespace WebApplication1.Repositories
 
 
             return Tuple.Create(certificate, collection);
-        }
+        }*/
+        public void hellobuddy()
+        {
+            var cert = new X509Certificate2(@"C:\Users\mohnish.varatharajan\source\repos\pdfsharp\WebApplication1\key\nextlysign.pfx", "Dhanya123#");
+            var options = new PdfSignatureOptions
+            {
+                Certificate = cert,
+                FieldName = "Signature-" + Guid.NewGuid().ToString("N"),
+                PageIndex = 0,
+                Rectangle = new XRect(120, 10, 100, 60),
+                Location = "My PC",
+                Reason = "Approving Rev #2",
+                // Signature appearances can also consist of an image (Rectangle should be adapted to image size)
+                //Image = XImage.FromFile(@"C:\Data\stamp.png")
+            };
 
+            // first signature
+            //var sourceFile = IOUtility.GetAssetsPath("archives/grammar-by-example/GBE/ReferencePDFs/WPF 1.31/Table-Layout.pdf")!;
+            //var targetFile = Path.Combine(Path.GetTempPath(), "AA-Signed.pdf");
+
+            // second signature
+            var sourceFile = Path.Combine(Path.GetTempPath(), "C:\\Users\\mohnish.varatharajan\\source\\repos\\pdfsharp\\WebApplication1\\SignExisting8.pdf");
+            var targetFile = Path.Combine(Path.GetTempPath(), "C:\\Users\\mohnish.varatharajan\\source\\repos\\pdfsharp\\WebApplication1\\CreateAndSign8.pdf");
+            File.Copy(sourceFile, targetFile, true);
+
+            using var fs = File.Open(targetFile, FileMode.Open, FileAccess.ReadWrite);
+            var signer = new PdfSigner(fs, options);
+            var resultStream = signer.Sign();
+            // overwrite input document
+            fs.Seek(0, SeekOrigin.Begin);
+            resultStream.CopyTo(fs);
+        }
     }
 
 }

@@ -20,7 +20,8 @@ namespace WebApplication1.Controllers
         public IActionResult Index()
         {
             HomeRepositories homeRepositories = new HomeRepositories();
-            homeRepositories.CallPDF();
+            homeRepositories.hellobuddy();
+            //homeRepositories.CallPDF();
             return View();
         }
 
